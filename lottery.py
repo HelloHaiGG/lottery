@@ -4,6 +4,18 @@ import yaml
 import random
 import time
 import pygame  # 添加 pygame 导入
+import os
+import sys
+
+def resource_path(relative_path):
+    """ 获取资源的绝对路径 """
+    try:
+        # PyInstaller创建临时文件夹，将路径存储在_MEIPASS中
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
 
 class LotteryApp:
     def __init__(self):
@@ -15,14 +27,14 @@ class LotteryApp:
         
         # 加载并播放背景音乐
         try:
-            pygame.mixer.music.load('background.mp3')  # 确保music文件夹中有background.mp3文件
-            pygame.mixer.music.set_volume(0.5)  # 设置音量为50%
-            pygame.mixer.music.play(-1)  # -1表示循环播放
+            pygame.mixer.music.load(resource_path('background.mp3'))
+            pygame.mixer.music.set_volume(0.5)
+            pygame.mixer.music.play(-1)
         except:
             print("无法加载背景音乐")
         
         # 加载配置
-        with open('config.yaml', 'r', encoding='utf-8') as f:
+        with open(resource_path('config.yaml'), 'r', encoding='utf-8') as f:
             self.config = yaml.safe_load(f)
         
         # 初始化轮次和中奖记录
@@ -230,6 +242,9 @@ class LotteryApp:
             fg='#FFD700'
         )
         hint_label.pack(pady=10)
+        
+        # 标记已显示最终结果
+        self.showing_final_results = True
     
     def quit_app(self):
         """优雅退出程序"""
@@ -244,15 +259,15 @@ class LotteryApp:
         if self.is_exiting:
             return
         
-        if hasattr(self, 'winners') and len(self.winners) == self.total_rounds:
-            # 如果所有轮次都已完成，按空格键退出
+        # 添加这个判断，如果已经显示最终结果，则点击空格键退出
+        if hasattr(self, 'showing_final_results') and self.showing_final_results:
             self.quit_app()
             return
         
         if not self.is_running:
             # 开始抽奖时播放音效
             try:
-                effect = pygame.mixer.Sound('start.mp3')  # 确保有start.mp3文件
+                effect = pygame.mixer.Sound(resource_path('start.mp3'))
                 effect.set_volume(0.8)
                 effect.play()
             except:
@@ -260,6 +275,10 @@ class LotteryApp:
                 
             if self.showing_result:
                 self.showing_result = False
+                if self.current_round == self.total_rounds:
+                    # 如果是最后一轮结束，直接显示最终结果
+                    self.show_final_results()
+                    return  # 添加return，防止继续执行
                 self.prepare_next_round()
             else:
                 # 检查是否还有可用号码
@@ -274,7 +293,7 @@ class LotteryApp:
         else:
             # 停止抽奖时播放音效
             try:
-                effect = pygame.mixer.Sound('stop.mp3')  # 确保有stop.mp3文件
+                effect = pygame.mixer.Sound(resource_path('stop.mp3'))
                 effect.set_volume(0.8)
                 effect.play()
             except:
