@@ -3,11 +3,23 @@ from tkinter import font
 import yaml
 import random
 import time
+import pygame  # 添加 pygame 导入
 
 class LotteryApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("抽奖程序")
+        
+        # 初始化pygame音频
+        pygame.mixer.init()
+        
+        # 加载并播放背景音乐
+        try:
+            pygame.mixer.music.load('background.mp3')  # 确保music文件夹中有background.mp3文件
+            pygame.mixer.music.set_volume(0.5)  # 设置音量为50%
+            pygame.mixer.music.play(-1)  # -1表示循环播放
+        except:
+            print("无法加载背景音乐")
         
         # 加载配置
         with open('config.yaml', 'r', encoding='utf-8') as f:
@@ -221,6 +233,10 @@ class LotteryApp:
     
     def quit_app(self):
         """优雅退出程序"""
+        # 停止音乐
+        pygame.mixer.music.stop()
+        pygame.mixer.quit()
+        
         self.is_exiting = True
         self.root.quit()
     
@@ -234,6 +250,14 @@ class LotteryApp:
             return
         
         if not self.is_running:
+            # 开始抽奖时播放音效
+            try:
+                effect = pygame.mixer.Sound('start.mp3')  # 确保有start.mp3文件
+                effect.set_volume(0.8)
+                effect.play()
+            except:
+                print("无法加载开始音效")
+                
             if self.showing_result:
                 self.showing_result = False
                 self.prepare_next_round()
@@ -248,6 +272,14 @@ class LotteryApp:
                 else:
                     self.message_label.configure(text="已无可用号码")
         else:
+            # 停止抽奖时播放音效
+            try:
+                effect = pygame.mixer.Sound('stop.mp3')  # 确保有stop.mp3文件
+                effect.set_volume(0.8)
+                effect.play()
+            except:
+                print("无法加载停止音效")
+                
             # 停止抽奖
             self.is_running = False
             
