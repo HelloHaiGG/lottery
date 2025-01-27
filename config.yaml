@@ -3,7 +3,7 @@ total_rounds: 3
 
 # 固定中奖配置
 fixed_winner:
-  round: 3  # 第几轮固定中奖
+  round: 2  # 第几轮固定中奖
   number: "058"  # 固定中奖号码
 
 # 参与抽奖的号码范围
