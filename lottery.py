@@ -71,7 +71,7 @@ class LotteryApp:
         round_font = font.Font(family='SimHei', size=30)
         self.round_label = tk.Label(
             right_container,
-            text=f"第{self.current_round}轮 / 共{self.total_rounds}轮",
+            text=f"第{self.current_round}个 / 共{self.total_rounds}个",
             font=round_font,
             bg='#FF0000',
             fg='#FFD700'
@@ -96,7 +96,7 @@ class LotteryApp:
         self.message_font = font.Font(family='SimHei', size=100, weight='bold')
         self.message_label = tk.Label(
             self.display_frame,
-            text=f"开始第{self.current_round}轮抽奖",
+            text=f"开始第{self.current_round}个抽奖",
             font=self.message_font,
             bg='#FF0000',
             fg='#FFD700'
@@ -190,7 +190,7 @@ class LotteryApp:
             winner = self.winners[round_num]
             result_label = tk.Label(
                 winners_frame,
-                text=f"第{round_num}轮: {winner}号",
+                text=f"第{round_num}个: {winner}号",
                 font=result_font,
                 bg='#FF0000',
                 fg='#FFD700'
@@ -280,10 +280,10 @@ class LotteryApp:
             available_count = self.config['number_range']['end'] - len(self.used_numbers)
             if available_count > 0:
                 self.current_round += 1
-                self.round_label.config(text=f"第{self.current_round}轮 / 共{self.total_rounds}轮")
+                self.round_label.config(text=f"第{self.current_round}个 / 共{self.total_rounds}个")
                 
                 # 显示下一轮开始提示
-                self.message_label.configure(text=f"开始第{self.current_round}轮抽奖")
+                self.message_label.configure(text=f"开始第{self.current_round}个抽奖")
                 self.message_label.pack(expand=True)
             else:
                 # 如果没有可用号码，直接显示最终结果
